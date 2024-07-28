@@ -448,6 +448,7 @@ bool Network::OnRaknetReceive(Packet& packet) noexcept
             serverAddress.sin_addr.s_addr = inet_addr(Network::serverIp.c_str());
             serverAddress.sin_port = htons(stData.serverPort);
 
+
             if (connect(Network::socketHandle, reinterpret_cast<const sockaddr*>(&serverAddress),
                 sizeof(serverAddress)) == SOCKET_ERROR)
             {

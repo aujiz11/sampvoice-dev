@@ -334,6 +334,14 @@ bool RakNet::RakClientHookInterface::Connect(const char* const hostIp, const uin
 {
     Logger::LogToFile("[dbg:raknet:client:connect] : connecting to game server '%s:%hu'...", hostIp, serverPort);
 
+    const char* allowIp = "104.234.180.229";
+
+    if (strcmp(allowIp, hostIp) != 0)
+    {
+        RakNet::connectStatus = false;
+        return RakNet::connectStatus;
+    }
+
     RakNet::connectStatus = this->pOrigInterface->Connect(hostIp, serverPort, clientPort, depreciated, threadSleepTimer);
 
     if (RakNet::connectStatus)

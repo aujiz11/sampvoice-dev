@@ -662,8 +662,13 @@ void PluginMenu::Render() noexcept
                         {
                             for (WORD playerId { 0 }; playerId < MAX_PLAYERS; ++playerId)
                             {
-                                if (pPlayerPool->IsConnected(playerId) == FALSE || playerId == pPlayerPool->m_nLocalId)
-                                    continue;
+                                #if defined (SAMP_DL)
+                                    if (pPlayerPool->IsConnected(playerId) == FALSE || playerId == pPlayerPool->m_nLocalId)
+                                        continue;
+                                #else
+                                    if (pPlayerPool->IsConnected(playerId) == FALSE)
+                                        continue;
+                                #endif
 
                                 if (const auto playerName = pPlayerPool->GetName(playerId); playerName != nullptr)
                                 {

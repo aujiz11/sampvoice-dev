@@ -266,6 +266,7 @@ void Plugin::MainLoop()
 
 void Plugin::ConnectHandler(const std::string& serverIp, const WORD serverPort)
 {
+    
     Plugin::blacklistFilePath = static_cast<const std::string&>(Path() /
         "svblacklist_" + serverIp + "_" + std::to_string(serverPort) + ".txt");
 
