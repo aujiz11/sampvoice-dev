@@ -20,12 +20,6 @@ bool Record::Init(const DWORD bitrate) noexcept
     if (Record::initStatus)
         return false;
 
-    if (BASS_IsStarted() == FALSE)
-    {
-        Logger::LogToFile("[sv:dbg:record:init] : BASS_IsStarted failed...");
-        return false;
-    }
-
     Logger::LogToFile("[sv:dbg:record:init] : module initializing...");
 
     Record::deviceNamesList.clear();
