@@ -119,7 +119,7 @@ private:
     static constexpr float kBaseFontTitleSize              = 20.f;
     static constexpr float kBaseFontTabSize                = 14.f;
     static constexpr float kBaseFontDescSize               = 12.f;
-    static constexpr float kBaseFontSize                   = 10.f;
+    static constexpr float kBaseFontSize                   = 12.f;
     static constexpr int   kTabsCount                      = 3;
     static constexpr float kBaseTabPadding                 = 4.f;
     static constexpr float kBaseTabWidth                   = (kBaseMenuWidth - (2 * kBaseMenuPaddingX +

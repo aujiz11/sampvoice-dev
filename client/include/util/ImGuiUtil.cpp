@@ -116,9 +116,6 @@ bool ImGuiUtil::IsRendering() noexcept
 
 void ImGuiUtil::EndRender() noexcept
 {
-    if (!ImGuiUtil::initStatus)
-        return;
-
     if (!ImGuiUtil::renderStatus)
         return;
 

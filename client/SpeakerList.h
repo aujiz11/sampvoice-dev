@@ -36,9 +36,9 @@ class SpeakerList {
 private:
 
     static constexpr int kBaseLinesCount = 12;
-    static constexpr float kBaseLeftIndent = 37.f;
+    static constexpr float kBaseLeftIndent = 28.f;
     static constexpr float kBaseIconSize = 36.f;
-    static constexpr float kBaseFontSize = 7.5f;
+    static constexpr float kBaseFontSize = 10.f;
 
 public:
 
