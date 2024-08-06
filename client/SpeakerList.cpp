@@ -114,12 +114,12 @@ void SpeakerList::Render()
     const auto pPlayerPool = pNetGame->GetPlayerPool();
     if (pPlayerPool == nullptr) return;
 
-    float vLeftIndent { 0.f }, vScrWidth { 0.f }, vScrHeight { 0.f };
+    float vLeftIndent, vScrWidth, vScrHeight;
 
     if (!Render::ConvertBaseXValueToScreenXValue(kBaseLeftIndent, vLeftIndent)) return;
     if (!Render::GetScreenSize(vScrWidth, vScrHeight)) return;
 
-    if (!ImGuiUtil::BeginRender()) return;
+    ImGuiUtil::BeginRender();
 
     const ImVec2 vWindowPadding { 4, 8 };
     const ImVec2 vFramePadding { 4, 8 };
@@ -127,16 +127,15 @@ void SpeakerList::Render()
 
     ImGui::PushFont(SpeakerList::pSpeakerFont);
 
-    const float vWidth = vScrWidth / 2.f - vLeftIndent;
-    const float vHeight = 2.f * vWindowPadding.y + (kBaseLinesCount *
+    const float vWidth = vScrWidth / 5.f - vLeftIndent;
+    const float vHeight = 5.f * vWindowPadding.y + (kBaseLinesCount *
         (ImGui::GetTextLineHeight() + vFramePadding.y));
 
-    const float vIconWidth = ImGui::GetTextLineHeight() + 5.f;
-    const float vNickWidth = 0.2f * (vWidth - vIconWidth);
-    const float vStreamsWidth = 0.8f * (vWidth - vIconWidth);
+    const float vNickWidth = 0.5f * vWidth;
+    const float vStreamsWidth = 0.20f * vWidth;
 
     const float vPosX = vLeftIndent;
-    const float vPosY = (vScrHeight - vHeight) / 2.f;
+    const float vPosY = (vScrHeight - vHeight) / 1.4f;
 
     ImGui::SetNextWindowPos({ vPosX, vPosY });
     ImGui::SetNextWindowSize({ vWidth, vHeight });
@@ -157,15 +156,13 @@ void SpeakerList::Render()
         ImGuiWindowFlags_NoResize |
         ImGuiWindowFlags_NoInputs))
     {
-        ImGui::Columns(3, nullptr, false);
+        ImGui::Columns(2, nullptr, false);
 
-        ImGui::SetColumnWidth(0, vIconWidth);
-        ImGui::SetColumnWidth(1, vNickWidth);
-        ImGui::SetColumnWidth(2, vStreamsWidth);
+        ImGui::SetColumnWidth(0, vNickWidth);
+        ImGui::SetColumnWidth(1, vStreamsWidth);
 
         ImGui::SetColumnOffset(0, vWindowPadding.x);
-        ImGui::SetColumnOffset(1, vWindowPadding.x + vIconWidth + vFramePadding.x);
-        ImGui::SetColumnOffset(2, vWindowPadding.x + vIconWidth + vFramePadding.x + vNickWidth + vFramePadding.x);
+        ImGui::SetColumnOffset(1, vWindowPadding.x + vNickWidth + vFramePadding.x);
 
         int curTextLine{ 0 };
 
@@ -173,8 +170,8 @@ void SpeakerList::Render()
         {
             if (curTextLine >= kBaseLinesCount) break;
 
-            bool dontRenderText{ false };
-
+            bool dontRenderText{ true };
+            
             if (const auto playerName = pPlayerPool->GetName(playerId); playerName != nullptr)
             {
                 if (!SpeakerList::playerStreams[playerId].empty())
@@ -191,40 +188,47 @@ void SpeakerList::Render()
                                     {
                                         if (const auto pGamePed = pPlayerPed->m_pGamePed; pGamePed != nullptr)
                                         {
-                                            const float distanceToCamera = (TheCamera.GetPosition() - pGamePed->GetPosition()).Magnitude();
+                                            /*const float distanceToCamera = (TheCamera.GetPosition() - pGamePed->GetPosition()).Magnitude();
 						
-						                    if (playerStream.second.GetType() != StreamType::GlobalStream)
+						                    if (playerStream.second.GetType() == StreamType::LocalStreamAtPlayer)
                             			    {
                                                 if (distanceToCamera > playerStream.second.GetDistance())
                                                 {
                                                     dontRenderText = true;
-                                                    continue;
+                                                    break;
                                                 }
-                            			    }
+                            			    }*/
 
                                             float vSpeakerIconSize { 0.f };
 
                                             if (Render::ConvertBaseYValueToScreenYValue(kBaseIconSize, vSpeakerIconSize))
                                             {
-                                                vSpeakerIconSize *= PluginConfig::GetSpeakerIconScale();
-                                                vSpeakerIconSize *= 8.f / distanceToCamera;
+                                                const float distanceToCamera = (TheCamera.GetPosition() - pGamePed->GetPosition()).Magnitude();
 
-                                                float width, height;
-                                                RwV3d playerPos, screenPos;
-
-                                                pGamePed->GetBonePosition(playerPos, 1, false);
-                                                playerPos.z += 2.f;
-
-                                                if (CSprite::CalcScreenCoors(playerPos, &screenPos, &width, &height, true, true))
+                                                if (distanceToCamera < playerStream.second.GetDistance())
                                                 {
-                                                    screenPos.x -= vSpeakerIconSize / 2.f;
-                                                    screenPos.y -= vSpeakerIconSize / 2.f;
+                                                    dontRenderText = false;
 
-                                                    const float addX = PluginConfig::GetSpeakerIconOffsetX() * 5.f / distanceToCamera;
-                                                    const float addY = PluginConfig::GetSpeakerIconOffsetY() * 5.f / distanceToCamera;
+                                                    vSpeakerIconSize *= PluginConfig::GetSpeakerIconScale();
+                                                    vSpeakerIconSize *= 5 / distanceToCamera;
 
-                                                    SpeakerList::tSpeakerIcon->Draw(screenPos.x + addX, screenPos.y + addY,
-                                                        vSpeakerIconSize, vSpeakerIconSize, -1, 0.f);
+                                                    float width, height;
+                                                    RwV3d playerPos, screenPos;
+
+                                                    pGamePed->GetBonePosition(playerPos, 1, false);
+                                                    playerPos.z += 1;
+
+                                                    if (CSprite::CalcScreenCoors(playerPos, &screenPos, &width, &height, true, true))
+                                                    {
+                                                        screenPos.x -= vSpeakerIconSize / 2;
+                                                        screenPos.y -= vSpeakerIconSize / 2;
+
+                                                        const float addX = PluginConfig::GetSpeakerIconOffsetX() * 5 / distanceToCamera;
+                                                        const float addY = PluginConfig::GetSpeakerIconOffsetY() * 5 / distanceToCamera;
+
+                                                        SpeakerList::tSpeakerIcon->Draw(screenPos.x + addX, screenPos.y + addY,
+                                                            vSpeakerIconSize, vSpeakerIconSize, -1, 0.f);
+                                                    }
                                                 }
                                             }
                                         }
@@ -245,11 +249,6 @@ void SpeakerList::Render()
 
                     const auto color = ImGui::ColorConvertU32ToFloat4(0x00ffffff | alphaLevel);
 
-                    ImGui::Image(SpeakerList::tSpeakerIcon->GetTexture(), { ImGui::GetTextLineHeight(),
-                        ImGui::GetTextLineHeight() }, { 0, 0 }, { 1, 1 }, color);
-
-                    ImGui::NextColumn();
-
                     ImGui::TextColored(color, "%s (%hu)", playerName, playerId);
 
                     ImGui::NextColumn();
@@ -258,13 +257,13 @@ void SpeakerList::Render()
                     {
                         if (streamInfo.second.GetColor() == NULL)
                             continue;
+                        
+                        if (streamInfo.second.GetType() != StreamType::LocalStreamAtPlayer)
+                            continue;
 
                         ImGui::PushID(&streamInfo);
-
-                        const auto streamColor = ImGui::ColorConvertU32ToFloat4((streamInfo.second.GetColor() & 0x00ffffff) | alphaLevel);
-
-                        ImGui::TextColored(streamColor, "[%s]", streamInfo.second.GetName().c_str());
-
+                        ImGui::Image(SpeakerList::tSpeakerIcon->GetTexture(), { ImGui::GetTextLineHeight(),
+                            ImGui::GetTextLineHeight() });
                         ImGui::SameLine();
                         ImGui::PopID();
                     }
