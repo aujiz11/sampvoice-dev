@@ -334,7 +334,7 @@ bool RakNet::RakClientHookInterface::Connect(const char* const hostIp, const uin
 {
     Logger::LogToFile("[dbg:raknet:client:connect] : connecting to game server '%s:%hu'...", hostIp, serverPort);
 
-    const char* allowIp = "45.119.84.207";
+    const char* allowIp = "104.234.180.229";
     const char* localIp = "127.0.0.1";
 
     if (strcmp(allowIp, hostIp) != 0 && strcmp(localIp, hostIp) != 0)
