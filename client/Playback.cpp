@@ -124,7 +124,7 @@ void Playback::SetSoundVolume(const int soundVolume) noexcept
 
 void Playback::SetSoundBalancer(const bool soundBalancer) noexcept
 {
-    static HFX balancerFxHandle { NULL };
+    static HFX balancerFxHandle = NULL;
 
     if (!Playback::loadStatus) return;
 
@@ -226,11 +226,25 @@ BOOL WINAPI Playback::BassInitHookFunc(const int device, const DWORD freq, const
 
     Logger::LogToFile("[sv:dbg:playback:bassinithook] : module loading...");
 
-    BASS_SetConfig(BASS_CONFIG_UNICODE, TRUE);
-    BASS_SetConfig(BASS_CONFIG_BUFFER, SV::kChannelBufferSizeInMs);
-    BASS_SetConfig(BASS_CONFIG_UPDATEPERIOD, SV::kAudioUpdatePeriod);
-    BASS_SetConfig(BASS_CONFIG_UPDATETHREADS, SV::kAudioUpdateThreads);
-    BASS_SetConfig(BASS_CONFIG_3DALGORITHM, BASS_3DALG_LIGHT);
+    if (BASS_SetConfig(BASS_CONFIG_UNICODE, TRUE) == FALSE)
+        Logger::LogToFile("[sv:dbg:playback:bassinithook] failed to "
+            "set 'BASS_CONFIG_UNICODE' parameter (code:%d)", BASS_ErrorGetCode());
+
+    if (BASS_SetConfig(BASS_CONFIG_BUFFER, SV::kChannelBufferSizeInMs) == FALSE)
+        Logger::LogToFile("[sv:dbg:playback:bassinithook] failed to "
+            "set 'BASS_CONFIG_BUFFER' parameter (code:%d)", BASS_ErrorGetCode());
+
+    if (BASS_SetConfig(BASS_CONFIG_UPDATEPERIOD, SV::kAudioUpdatePeriod) == FALSE)
+        Logger::LogToFile("[sv:dbg:playback:bassinithook] failed to "
+            "set 'BASS_CONFIG_UPDATEPERIOD' parameter (code:%d)", BASS_ErrorGetCode());
+
+    if (BASS_SetConfig(BASS_CONFIG_UPDATETHREADS, SV::kAudioUpdateThreads) == FALSE)
+        Logger::LogToFile("[sv:dbg:playback:bassinithook] failed to "
+            "set 'BASS_CONFIG_UPDATETHREADS' parameter (code:%d)", BASS_ErrorGetCode());
+
+    if (BASS_SetConfig(BASS_CONFIG_3DALGORITHM, BASS_3DALG_LIGHT) == FALSE)
+        Logger::LogToFile("[sv:dbg:playback:bassinithook] failed to "
+            "set 'BASS_CONFIG_3DALGORITHM' parameter (code:%d)", BASS_ErrorGetCode());
 
     Logger::LogToFile("[sv:dbg:playback:bassinithook] : hooked function BASS_Init(device:%d, "
         "freq:%u, flags:0x%x, win:0x%x, dsguid:0x%x)...", device, freq, flags, win, dsguid);
